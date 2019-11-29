@@ -1,0 +1,214 @@
+﻿@typeparam T
+
+@using System.Collections.Generic
+@using System.Linq
+@using System.Linq.Dynamic.Core
+@using Microsoft.AspNetCore.Components
+
+<div class="btn-toolbar justify-content-between">
+    <div class="btn-group">
+        @ButtonGroup
+    </div>
+
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <button id="visiblityDrop" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Dropdown
+            </button>
+            <div class="dropdown-menu" aria-labelledby="visiblityDrop">
+                @foreach (var column in Columns)
+                {
+                    string classes = "dropdown-item";
+                    if (VisibleColumns.Contains(column.Value))
+                    {
+                        classes += " active";
+                    }
+                    <a class="@classes" href="#">@column.Value</a>
+                }
+            </div>
+        </div>
+        <div class="input-group-prepend">
+            <span class="input-group-text oi oi-magnifying-glass" style="top: 0;"></span>
+        </div>
+        <input @onchange="@(e => SearchTable(e.Value.ToString()))" oninput="(this.dispatchEvent(new CustomEvent('change', {bubbles: true})))" type="text" class="form-control" placeholder="search" />
+    </div>
+
+</div>
+<table class="table table-hover">
+    <thead>
+        <tr>
+            @foreach (var column in Columns)
+            {
+                string columnName = column.Value;
+                string fieldName = column.Key;
+
+                if (!VisibleColumns.Contains(columnName))
+                {
+                    continue;
+                }
+
+                string classes;
+                if (LastSortColumn == fieldName)
+                {
+                    if (SortAsc)
+                    {
+                        classes = ColumnClassTop;
+                    }
+                    else
+                    {
+                        classes = ColumnClassBottom;
+                    }
+                }
+                else
+                {
+                    classes = ColumnClassDefault;
+                }
+                <th style="cursor: pointer; user-select:none;" @onclick="@(() => SortList(fieldName))">@columnName<span style="margin-left: 10px;" class="@classes"></span></th>
+            }
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in items)
+        {
+            if (RowTemplate == null)
+            {
+                var type = item.GetType();
+                var propertyNames = type.GetProperties().Select(property => property.Name).ToList();
+                <tr style="cursor: pointer" @onclick="@(() => RowClicked(item))">
+                    @foreach (var column in Columns)
+                    {
+                        if (!VisibleColumns.Contains(column.Value))
+                        {
+                            continue;
+                        }
+                        if (propertyNames.Contains(column.Key))
+                        {
+                            var propertyValue = type?.GetProperty(column.Key)?.GetValue(item, null);
+
+                            <td>@propertyValue?.ToString()</td>
+                        }
+                    }
+                </tr>
+            }
+            else
+            {
+                @RowTemplate(item);
+            }
+        }
+    </tbody>
+</table>
+
+@code {
+    List<T> items;
+
+    [Parameter]
+    public ICollection<T> Items { get; set; }
+
+    [Parameter]
+    public bool ShowAddButton { get; set; }
+
+    [Parameter]
+    public Dictionary<string, string> Columns { get; set; }
+
+    [Parameter]
+    public List<string> VisibleColumns { get; set; }
+
+    [Parameter]
+    public EventCallback<T> OnRowClicked { get; set; }
+
+    [Parameter]
+    public RenderFragment ButtonGroup { get; set; }
+
+    /// <summary>
+    /// This can be used to set the template for a row of the table. Leave this null to use the default template.
+    /// Make sure to use the same order as the columns variable, otherwise the table won't make any sense
+    /// </summary>
+    [Parameter]
+    public RenderFragment<T> RowTemplate { get; set; }
+
+    string ColumnClassBottom = " oi oi-caret-bottom";
+    string ColumnClassTop = "oi oi-caret-top";
+    string ColumnClassDefault = "oi oi-minus";
+    string ItemNameClasses;
+    string UnitClasses;
+    string QuantityClasses;
+
+    string LastSortColumn;
+    bool SortAsc = true;
+
+    protected override void OnInitialized()
+    {
+        InitializeTable();
+    }
+
+    public void ItemsHasChanged()
+    {
+        InitializeTable();
+        base.StateHasChanged();
+    }
+
+    private void InitializeTable()
+    {
+        ItemNameClasses = ColumnClassDefault;
+        UnitClasses = ColumnClassDefault;
+        QuantityClasses = ColumnClassDefault;
+
+        items = Items.ToList();
+        LastSortColumn = Columns.Keys.ToList()[0];
+    }
+
+    async void RowClicked(T row)
+    {
+        await OnRowClicked.InvokeAsync(row);
+    }
+
+    void SortList(string columnName)
+    {
+        if (columnName == LastSortColumn)
+        {
+            SortAsc = !SortAsc;
+        }
+        else
+        {
+            SortAsc = true;
+        }
+        LastSortColumn = columnName;
+        items = items.AsQueryable().OrderBy(columnName + " " + (SortAsc ? "ascending" : "descending")).ToList();
+    }
+
+    void SearchTable(string searchText)
+    {
+        var tempItems = Items.ToList();
+
+        //construct search query
+        string query = null;
+        foreach (var column in Columns.Keys)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                query = $"({column} != null && {column}.ToString().Contains(\"{searchText}\", StringComparison.OrdinalIgnoreCase))";
+            }
+            else
+            {
+                query += $" || ({column} != null && {column}.ToString().Contains(\"{searchText}\", StringComparison.OrdinalIgnoreCase))";
+            }
+        }
+
+        try
+        {
+            items = tempItems.AsQueryable().Where(query).ToList();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+
+        SortList(LastSortColumn);
+        SortList(LastSortColumn);
+    }
+
+    void VisiblityClicked(string columnName)
+    {
+        //TODO make this toggle visibility of columns and set active the items in the dropdown list
+    }
+}
