@@ -11,6 +11,5 @@ branches:
     is-release-branch: false
   release:
     regex: ^releases?[/-]
-    mode: MainLine
     tag: ''
     is-mainline: true
