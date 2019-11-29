@@ -28,6 +28,7 @@ steps:
   inputs:
     command: 'build'
     projects: '**/DataTable.csproj'
+    arguments: '--configuration $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'Pack'
