@@ -17,13 +17,13 @@ variables:
 
 steps:
 - task: GitVersion@5
-  displayName: 'Update project version number from Git'
+  displayName: 'Update version number'
   inputs:
     runtime: 'core'
     updateAssemblyInfo: true
 
 - task: PowerShell@2
-  displayName: 'Make project version number unique'
+  displayName: 'Make version number unique'
   inputs:
     targetType: 'inline'
     script: |
@@ -56,7 +56,7 @@ steps:
     versionEnvVar: 'CI_Version'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Publish to internal feed'
+  displayName: 'Publish internal feed'
   inputs:
     command: 'push'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
