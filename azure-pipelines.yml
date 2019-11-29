@@ -35,7 +35,7 @@ steps:
     command: 'pack'
     packagesToPack: '**/DataTable.csproj'
     nobuild: true
-    versioningScheme: 'byBuildNumber'
+    versioningScheme: 'off'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifacts'
