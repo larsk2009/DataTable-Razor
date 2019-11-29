@@ -1,2 +1,6 @@
 ﻿mode: MainLine
-branches: {}
+branches: 
+    master:
+        is-mainline: false
+  release:
+        is-mainline: true
