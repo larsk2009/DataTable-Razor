@@ -16,6 +16,22 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: GitVersion@5
+  displayName: 'Update version number'
+  inputs:
+    runtime: 'core'
+    updateAssemblyInfo: true
+
+- task: PowerShell@2
+  displayName: 'Make version number unique'
+  inputs:
+    targetType: 'inline'
+    script: |
+      $UtcDateTime = (Get-Date).ToUniversalTime()
+      $FormattedDateTime = (Get-Date -Date $UtcDateTime -Format "yyyyMMdd-HHmmss")
+      $CI_Version = "$env:GITVERSION_MAJORMINORPATCH-ci-$FormattedDateTime"
+      Write-Host ("##vso[task.setvariable variable=CI_Version;]$CI_Version")
+
 - task: DotNetCoreCLI@2
   displayName: 'Restore'
   inputs:
@@ -36,7 +52,16 @@ steps:
     command: 'pack'
     packagesToPack: '**/DataTable.csproj'
     nobuild: true
-    versioningScheme: 'off'
+    versioningScheme: 'byEnvVar'
+    versionEnvVar: 'CI_Version'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish internal feed'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '86128c56-ee9c-40f1-80d9-60e17748d4d4/18803733-ca1a-41da-9007-1784b66eb887'
 
 - task: PublishBuildArtifacts@1
   displayName: 'Publish Artifacts'
