@@ -27,15 +27,15 @@ steps:
     command: 'build'
     projects: 'DataTable.csproj'
 
-    - task: DotNetCoreCLI@2
-      inputs:
-        command: 'pack'
-        packagesToPack: 'DataTable.csproj'
-        nobuild: true
-        versioningScheme: 'byBuildNumber'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    packagesToPack: 'DataTable.csproj'
+    nobuild: true
+    versioningScheme: 'byBuildNumber'
 
-        - task: PublishBuildArtifacts@1
-          inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-            ArtifactName: 'Nuget Package'
-            publishLocation: 'Container'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'Nuget Package'
+    publishLocation: 'Container'
