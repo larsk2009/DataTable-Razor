@@ -19,18 +19,18 @@ steps:
 - task: DotNetCoreCLI@2
   inputs:
     command: 'restore'
-    projects: 'DataTable.csproj'
+    projects: '**/DataTable.csproj'
     feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'build'
-    projects: 'DataTable.csproj'
+    projects: '**/DataTable.csproj'
 
 - task: DotNetCoreCLI@2
   inputs:
     command: 'pack'
-    packagesToPack: 'DataTable.csproj'
+    packagesToPack: '**/DataTable.csproj'
     nobuild: true
     versioningScheme: 'byBuildNumber'
 
