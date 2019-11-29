@@ -1,6 +1,16 @@
 ﻿mode: MainLine
-branches: 
-    master:
-        is-mainline: false
+branches:
+  master:
+    regex: ^master
+    mode: ContinuousDelivery
+    tag: ''
+    increment: Patch
+    prevent-increment-of-merged-branch-version: true
+    track-merge-target: false
+    tracks-release-branches: false
+    is-release-branch: false
   release:
-        is-mainline: true
+    regex: ^releases?[/-]
+    mode: MainLine
+    tag: ''
+    is-mainline: true
