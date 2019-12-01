@@ -3,9 +3,10 @@ branches:
   master:
     regex: ^master
     mode: ContinuousDelivery
-    tag: ''
     is-release-branch: false
+    is-mainline: false
   release:
     regex: ^releases?[/-]
     tag: ''
     is-mainline: true
+    is-release-branch: true
