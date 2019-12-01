@@ -3,6 +3,7 @@ branches:
   master:
     regex: ^master
     is-release-branch: false
+    increment: Patch
   release:
     regex: ^releases?[/-]
     tag: ''
