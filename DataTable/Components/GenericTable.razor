@@ -23,7 +23,7 @@
                     {
                         classes += " active";
                     }
-                    <a class="@classes" href="#" @onclick="(() => VisiblityClicked(column.Value))">@column.Value</a>
+                    <a class="@classes" href="javascript:void(0)" @onclick="(() => VisiblityClicked(column.Value))">@column.Value</a>
                 }
             </div>
         </div>
