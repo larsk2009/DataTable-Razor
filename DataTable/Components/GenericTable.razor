@@ -13,7 +13,7 @@
     <div class="input-group">
         <div class="input-group-prepend">
             <button id="visiblityDrop" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Dropdown
+                Columns
             </button>
             <div class="dropdown-menu" aria-labelledby="visiblityDrop">
                 @foreach (var column in Columns)
@@ -23,7 +23,7 @@
                     {
                         classes += " active";
                     }
-                    <a class="@classes" href="#">@column.Value</a>
+                    <a class="@classes" href="javascript:void(0)" @onclick="(() => VisiblityClicked(column.Value))">@column.Value</a>
                 }
             </div>
         </div>
@@ -68,7 +68,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in items)
+        @foreach (var item in localItems)
         {
             if (RowTemplate == null)
             {
@@ -99,7 +99,7 @@
 </table>
 
 @code {
-    List<T> items;
+    List<T> localItems;
 
     [Parameter]
     public ICollection<T> Items { get; set; }
@@ -136,9 +136,17 @@
     string LastSortColumn;
     bool SortAsc = true;
 
+    private string _searchText;
+
     protected override void OnInitialized()
     {
         InitializeTable();
+    }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+        ItemsHasChanged();
     }
 
     public void ItemsHasChanged()
@@ -153,8 +161,10 @@
         UnitClasses = ColumnClassDefault;
         QuantityClasses = ColumnClassDefault;
 
-        items = Items.ToList();
+        localItems = Items.ToList();
         LastSortColumn = Columns.Keys.ToList()[0];
+
+        SearchTable(_searchText);
     }
 
     async void RowClicked(T row)
@@ -173,11 +183,12 @@
             SortAsc = true;
         }
         LastSortColumn = columnName;
-        items = items.AsQueryable().OrderBy(columnName + " " + (SortAsc ? "ascending" : "descending")).ToList();
+        localItems = localItems.AsQueryable().OrderBy(columnName + " " + (SortAsc ? "ascending" : "descending")).ToList();
     }
 
     void SearchTable(string searchText)
     {
+        _searchText = searchText;
         var tempItems = Items.ToList();
 
         //construct search query
@@ -196,7 +207,7 @@
 
         try
         {
-            items = tempItems.AsQueryable().Where(query).ToList();
+            localItems = tempItems.AsQueryable().Where(query).ToList();
         }
         catch (Exception e)
         {
@@ -209,6 +220,13 @@
 
     void VisiblityClicked(string columnName)
     {
-        //TODO make this toggle visibility of columns and set active the items in the dropdown list
+        if (VisibleColumns.Contains(columnName))
+        {
+            VisibleColumns.Remove(columnName);
+        }
+        else
+        {
+            VisibleColumns.Add(columnName);
+        }
     }
 }
