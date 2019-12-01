@@ -1,10 +1,14 @@
-﻿mode: ContinuousDeployment
+﻿mode: MainLine
 branches:
   master:
     regex: ^master
+    mode: ContinuousDeployment
+    is-mainline: false
     is-release-branch: false
     increment: Patch
   release:
     regex: ^releases?[/-]
+    mode: ContinuousDelivery
     tag: ''
     is-release-branch: true
+    is-mainline: true
