@@ -1,5 +1,6 @@
 ﻿@typeparam T
 
+@using System
 @using System.Collections.Generic
 @using System.Linq
 @using System.Linq.Dynamic.Core
@@ -74,21 +75,32 @@
             {
                 var type = item.GetType();
                 var propertyNames = type.GetProperties().Select(property => property.Name).ToList();
-                <tr style="cursor: pointer" @onclick="@(() => RowClicked(item))">
-                    @foreach (var column in Columns)
-                    {
-                        if (!VisibleColumns.Contains(column.Value))
-                        {
-                            continue;
-                        }
-                        if (propertyNames.Contains(column.Key))
-                        {
-                            var propertyValue = type?.GetProperty(column.Key)?.GetValue(item, null);
+        <tr style="cursor: pointer" @onclick="@(() => RowClicked(item))">
+            @foreach (var column in Columns)
+            {
+                if (!VisibleColumns.Contains(column.Value))
+                {
+                    continue;
+                }
+                if (propertyNames.Contains(column.Key))
+                {
+                    var propertyValue = type?.GetProperty(column.Key)?.GetValue(item, null);
 
-                            <td>@propertyValue?.ToString()</td>
-                        }
+                    if (propertyValue is bool boolValue)
+                    {
+                        <td><input type="checkbox" disabled @bind="boolValue" /></td>
                     }
-                </tr>
+                    else if (propertyValue is DateTime datetimeValue)
+                    {
+                        <td>@datetimeValue.ToString("dd-MM-yyyy")</td>
+                    }
+                    else
+                    {
+                        <td>@propertyValue?.ToString()</td>
+                    }
+                }
+            }
+        </tr>
             }
             else
             {

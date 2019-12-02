@@ -13,17 +13,21 @@
 
     protected override void OnInitialized()
     {
-        tests.Add(new test { test1 = "test", test2 = null });
+        tests.Add(new test { test1 = "test", test2 = null, test3 = true, test4 = DateTime.Now });
         for (int i = 0; i < 10; i++)
         {
-            tests.Add(new test { test1 = "test" + i, test2 = i + "test" });
+            tests.Add(new test { test1 = "test" + i, test2 = i + "test", test3 = false, test4 = DateTime.Now });
         }
 
         columns.Add("test1", "Test 1");
         columns.Add("test2", "Test 2");
+        columns.Add("test3", "Test 3");
+        columns.Add("test4", "Test 4");
 
         visibleColumns.Add("Test 1");
         visibleColumns.Add("Test 2");
+        visibleColumns.Add("Test 3");
+        visibleColumns.Add("Test 4");
     }
 
     private void OnRowClicked(test row)
@@ -39,5 +43,7 @@
     {
         public string test1 { get; set; }
         public string test2 { get; set; }
+        public bool test3 { get; set; }
+        public DateTime test4 { get; set; }
     }
 }
