@@ -5,6 +5,9 @@
 @using System.Linq
 @using System.Linq.Dynamic.Core
 @using Microsoft.AspNetCore.Components
+@using Microsoft.JSInterop
+
+@inject IJSRuntime JsRuntime
 
 <div class="btn-toolbar justify-content-between">
     <div class="btn-group">
@@ -240,5 +243,6 @@
         {
             VisibleColumns.Add(columnName);
         }
+        JsRuntime.InvokeVoidAsync("ToggleDropdown");
     }
 }
