@@ -69,6 +69,11 @@
                 }
                 <th style="cursor: pointer; user-select:none;" @onclick="@(() => SortList(fieldName))">@columnName<span style="margin-left: 10px;" class="@classes"></span></th>
             }
+            @*Render extra header if necessary for last column render fragment*@
+            @if (LastColumnTemplate != null)
+            {
+                <th style="user-select:none;"></th>
+            }
         </tr>
     </thead>
     <tbody>
