@@ -4,7 +4,11 @@
 
 <h1>Hello, world!</h1>
 
-<GenericTable Items="tests" Columns="columns" VisibleColumns="visibleColumns" OnRowClicked="(test test) => OnRowClicked(test)"></GenericTable>
+<GenericTable Items="tests" Columns="columns" VisibleColumns="visibleColumns" OnRowClicked="(test test) => OnRowClicked(test)">
+    <LastColumnTemplate>
+        <button class="btn btn-danger" @onclick="(() => DeleteClicked(context))" @onclick:stopPropagation>Delete</button>
+    </LastColumnTemplate>
+</GenericTable>
 
 @code {
     List<test> tests = new List<test>();
@@ -37,6 +41,11 @@
         tempList[tests.FindIndex(t => t.test1 == row.test1 && t.test2 == row.test2)] = newRow;
         tests = tempList.ToList();
         StateHasChanged();
+    }
+
+    private void DeleteClicked(test row)
+    {
+        tests.Remove(row);
     }
 
     class test

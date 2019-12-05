@@ -78,36 +78,44 @@
             {
                 var type = item.GetType();
                 var propertyNames = type.GetProperties().Select(property => property.Name).ToList();
-        <tr style="cursor: pointer" @onclick="@(() => RowClicked(item))">
-            @foreach (var column in Columns)
-            {
-                if (!VisibleColumns.Contains(column.Value))
-                {
-                    continue;
-                }
-                if (propertyNames.Contains(column.Key))
-                {
-                    var propertyValue = type?.GetProperty(column.Key)?.GetValue(item, null);
+                <tr style="cursor: pointer" @onclick="@(() => RowClicked(item))">
+                    @foreach (var column in Columns)
+                    {
+                        if (!VisibleColumns.Contains(column.Value))
+                        {
+                            continue;
+                        }
+                        if (propertyNames.Contains(column.Key))
+                        {
+                            var propertyValue = type?.GetProperty(column.Key)?.GetValue(item, null);
 
-                    if (propertyValue is bool boolValue)
-                    {
-                        <td><input type="checkbox" disabled @bind="boolValue" /></td>
+                            if (propertyValue is bool boolValue)
+                            {
+                                <td><input type="checkbox" disabled @bind="boolValue" /></td>
+                            }
+                            else if (propertyValue is DateTime datetimeValue)
+                            {
+                                <td>@datetimeValue.ToString("dd-MM-yyyy")</td>
+                            }
+                            else
+                            {
+                                <td>@propertyValue?.ToString()</td>
+                            }
+                        }
                     }
-                    else if (propertyValue is DateTime datetimeValue)
+                    @if (LastColumnTemplate != null)
                     {
-                        <td>@datetimeValue.ToString("dd-MM-yyyy")</td>
+                        <td>
+                            @LastColumnTemplate(item)
+                        </td>
                     }
-                    else
-                    {
-                        <td>@propertyValue?.ToString()</td>
-                    }
-                }
-            }
-        </tr>
+                </tr>
             }
             else
             {
-                @RowTemplate(item);
+                <tr>
+                    @RowTemplate(item)
+                </tr>
             }
         }
     </tbody>
@@ -140,6 +148,9 @@
     /// </summary>
     [Parameter]
     public RenderFragment<T> RowTemplate { get; set; }
+
+    [Parameter]
+    public RenderFragment<T> LastColumnTemplate { get; set; }
 
     string ColumnClassBottom = " oi oi-caret-bottom";
     string ColumnClassTop = "oi oi-caret-top";
