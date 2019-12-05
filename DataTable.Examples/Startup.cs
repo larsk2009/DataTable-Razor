@@ -27,7 +27,7 @@ namespace DataTable.Examples
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services.AddServerSideBlazor().AddCircuitOptions(opt => opt.DetailedErrors = true);
             services.AddSingleton<WeatherForecastService>();
         }
 
