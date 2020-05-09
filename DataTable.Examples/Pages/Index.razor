@@ -4,7 +4,15 @@
 
 <h1>Hello, world!</h1>
 
-<GenericTable Items="tests" Columns="columns" VisibleColumns="visibleColumns" OnRowClicked="(test test) => OnRowClicked(test)">
+<button class="btn btn-success" @onclick="GetSelectedItems">Get selected items</button>
+
+@if (selectedTests != null)
+{
+
+    <GenericTable Items="selectedTests" Columns="columns" VisibleColumns="visibleColumns"></GenericTable>
+}
+
+<GenericTable @ref="table" Items="tests" Columns="columns" VisibleColumns="visibleColumns" OnRowClicked="(test test) => OnRowClicked(test)" SelectableRows="true">
     <LastColumnTemplate>
         <button class="btn btn-danger" @onclick="(() => DeleteClicked(context))" @onclick:stopPropagation>Delete</button>
     </LastColumnTemplate>
@@ -14,6 +22,10 @@
     List<test> tests = new List<test>();
     Dictionary<string, string> columns = new Dictionary<string, string>();
     List<string> visibleColumns = new List<string>();
+
+    List<test> selectedTests;
+
+    GenericTable<test> table;
 
     protected override void OnInitialized()
     {
@@ -37,7 +49,7 @@
     private void OnRowClicked(test row)
     {
         var tempList = tests.ToList();
-        var newRow = new test {test1 = row.test2, test2 = row.test1};
+        var newRow = new test { test1 = row.test2, test2 = row.test1 };
         tempList[tests.FindIndex(t => t.test1 == row.test1 && t.test2 == row.test2)] = newRow;
         tests = tempList.ToList();
         StateHasChanged();
@@ -46,6 +58,11 @@
     private void DeleteClicked(test row)
     {
         tests.Remove(row);
+    }
+
+    private void GetSelectedItems()
+    {
+        selectedTests = table.SelectedItems.ToList();
     }
 
     class test

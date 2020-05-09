@@ -1,13 +1,9 @@
 ﻿@typeparam T
 
 @using System
-@using System.Collections.Generic
 @using System.Linq
 @using System.Linq.Dynamic.Core
 @using Microsoft.AspNetCore.Components
-@using Microsoft.JSInterop
-
-@inject IJSRuntime JsRuntime
 
 <div class="btn-toolbar justify-content-between">
     <div class="btn-group">
@@ -41,6 +37,11 @@
 <table class="table table-hover">
     <thead>
         <tr>
+            @* Render extra header when selectable rows will be used *@
+            @if (SelectableRows)
+            {
+                <th></th>
+            }
             @foreach (var column in Columns)
             {
                 string columnName = column.Value;
@@ -69,7 +70,7 @@
                 }
                 <th style="cursor: pointer; user-select:none;" @onclick="@(() => SortList(fieldName))">@columnName<span style="margin-left: 10px;" class="@classes"></span></th>
             }
-            @*Render extra header if necessary for last column render fragment*@
+            @* Render extra header if necessary for last column render fragment *@
             @if (LastColumnTemplate != null)
             {
                 <th style="user-select:none;"></th>
@@ -77,13 +78,22 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in localItems)
+        @*foreach (var item in localItems)*@
+        @foreach(var dictionaryItem in localItemsDictionary)
         {
+            var key = dictionaryItem.Key;
+            var value = dictionaryItem.Value;
+            var item = dictionaryItem.Value;
             if (RowTemplate == null)
             {
                 var type = item.GetType();
                 var propertyNames = type.GetProperties().Select(property => property.Name).ToList();
-                <tr style="cursor: pointer" @onclick="@(() => RowClicked(item))">
+                <tr style="cursor: pointer" @onclick="@(() => RowClicked(dictionaryItem))">
+                    @if (SelectableRows)
+                    {
+                        <td><input type="checkbox" checked="@(SelectedKeys.Contains(key))"/></td>
+                    }
+
                     @foreach (var column in Columns)
                     {
                         if (!VisibleColumns.Contains(column.Value))
@@ -125,140 +135,3 @@
         }
     </tbody>
 </table>
-
-@code {
-    List<T> localItems;
-
-    [Parameter]
-    public ICollection<T> Items { get; set; }
-
-    [Parameter]
-    public bool ShowAddButton { get; set; }
-
-    [Parameter]
-    public Dictionary<string, string> Columns { get; set; }
-
-    [Parameter]
-    public List<string> VisibleColumns { get; set; }
-
-    [Parameter]
-    public EventCallback<T> OnRowClicked { get; set; }
-
-    [Parameter]
-    public RenderFragment ButtonGroup { get; set; }
-
-    /// <summary>
-    /// This can be used to set the template for a row of the table. Leave this null to use the default template.
-    /// Make sure to use the same order as the columns variable, otherwise the table won't make any sense
-    /// </summary>
-    [Parameter]
-    public RenderFragment<T> RowTemplate { get; set; }
-
-    [Parameter]
-    public RenderFragment<T> LastColumnTemplate { get; set; }
-
-    string ColumnClassBottom = " oi oi-caret-bottom";
-    string ColumnClassTop = "oi oi-caret-top";
-    string ColumnClassDefault = "oi oi-minus";
-    string ItemNameClasses;
-    string UnitClasses;
-    string QuantityClasses;
-
-    string LastSortColumn;
-    bool SortAsc = true;
-
-    private string _searchText;
-
-    protected override void OnInitialized()
-    {
-        InitializeTable();
-    }
-
-    protected override void OnParametersSet()
-    {
-        base.OnParametersSet();
-        ItemsHasChanged();
-    }
-
-    public void ItemsHasChanged()
-    {
-        InitializeTable();
-        base.StateHasChanged();
-    }
-
-    private void InitializeTable()
-    {
-        ItemNameClasses = ColumnClassDefault;
-        UnitClasses = ColumnClassDefault;
-        QuantityClasses = ColumnClassDefault;
-
-        localItems = Items.ToList();
-        LastSortColumn = Columns.Keys.ToList()[0];
-
-        SearchTable(_searchText);
-    }
-
-    async void RowClicked(T row)
-    {
-        await OnRowClicked.InvokeAsync(row);
-    }
-
-    void SortList(string columnName)
-    {
-        if (columnName == LastSortColumn)
-        {
-            SortAsc = !SortAsc;
-        }
-        else
-        {
-            SortAsc = true;
-        }
-        LastSortColumn = columnName;
-        localItems = localItems.AsQueryable().OrderBy(columnName + " " + (SortAsc ? "ascending" : "descending")).ToList();
-    }
-
-    void SearchTable(string searchText)
-    {
-        _searchText = searchText;
-        var tempItems = Items.ToList();
-
-        //construct search query
-        string query = null;
-        foreach (var column in Columns.Keys)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                query = $"({column} != null && {column}.ToString().Contains(\"{searchText}\", StringComparison.OrdinalIgnoreCase))";
-            }
-            else
-            {
-                query += $" || ({column} != null && {column}.ToString().Contains(\"{searchText}\", StringComparison.OrdinalIgnoreCase))";
-            }
-        }
-
-        try
-        {
-            localItems = tempItems.AsQueryable().Where(query).ToList();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-        }
-
-        SortList(LastSortColumn);
-        SortList(LastSortColumn);
-    }
-
-    void VisiblityClicked(string columnName)
-    {
-        if (VisibleColumns.Contains(columnName))
-        {
-            VisibleColumns.Remove(columnName);
-        }
-        else
-        {
-            VisibleColumns.Add(columnName);
-        }
-        JsRuntime.InvokeVoidAsync("ToggleDropdown");
-    }
-}
