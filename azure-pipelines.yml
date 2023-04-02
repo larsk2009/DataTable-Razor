@@ -16,6 +16,10 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '6.x'
 - task: gitversion/setup@0
   displayName: Install GitVersion
   inputs:
