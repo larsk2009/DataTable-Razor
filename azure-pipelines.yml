@@ -16,15 +16,17 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: UseDotNet@2
+- task: gitversion/setup@0
+  displayName: Install GitVersion
   inputs:
-    packageType: 'sdk'
-    version: '2.x'
-- task: GitVersion@5
-  displayName: 'Update version number'
+    versionSpec: '5.x'
+    
+- task: gitversion/execute@0
+  displayName: Execute GitVersion
   inputs:
-    runtime: 'core'
+    useConfigFile: true
     updateAssemblyInfo: true
+    configFilePath: '$(Build.SourcesDirectory)/DataTable/gitversion.yaml'
 
 - task: PowerShell@2
   displayName: 'Make version number unique'
