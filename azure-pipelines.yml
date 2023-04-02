@@ -26,7 +26,7 @@ steps:
   inputs:
     useConfigFile: true
     updateAssemblyInfo: true
-    configFilePath: '$(Build.SourcesDirectory)/DataTable/gitversion.yaml'
+    configFilePath: '$(Build.SourcesDirectory)/DataTable/GitVersionConfig.yaml'
 
 - task: PowerShell@2
   displayName: 'Make version number unique'
