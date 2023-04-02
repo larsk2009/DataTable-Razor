@@ -10,17 +10,27 @@ trigger:
       - '*'
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: GitVersion@5
-  displayName: 'Update version number'
+- task: UseDotNet@2
   inputs:
-    runtime: 'core'
+    packageType: 'sdk'
+    version: '6.x'
+- task: gitversion/setup@0
+  displayName: Install GitVersion
+  inputs:
+    versionSpec: '5.x'
+    
+- task: gitversion/execute@0
+  displayName: Execute GitVersion
+  inputs:
+    useConfigFile: true
     updateAssemblyInfo: true
+    configFilePath: '$(Build.SourcesDirectory)/DataTable/GitVersionConfig.yaml'
 
 - task: PowerShell@2
   displayName: 'Make version number unique'
