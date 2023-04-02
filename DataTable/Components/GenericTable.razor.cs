@@ -31,6 +31,9 @@ namespace DataTable.Components
         [Parameter]
         public RenderFragment ButtonGroup { get; set; }
 
+        [Parameter]
+        public bool ShowTotals { get; set; }
+
         /// <summary>
         /// This can be used to set the template for a row of the table. Leave this null to use the default template.
         /// Make sure to use the same order as the columns variable, otherwise the table won't make any sense

@@ -12,7 +12,7 @@
     <GenericTable Items="selectedTests" Columns="columns" VisibleColumns="visibleColumns"></GenericTable>
 }
 
-<GenericTable @ref="table" Items="tests" Columns="columns" VisibleColumns="visibleColumns" OnRowClicked="(test test) => OnRowClicked(test)" SelectableRows="true">
+<GenericTable @ref="table" Items="tests" Columns="columns" VisibleColumns="visibleColumns" OnRowClicked="(test test) => OnRowClicked(test)" SelectableRows="true" ShowTotals=true>
     <LastColumnTemplate>
         <button class="btn btn-danger" @onclick="(() => DeleteClicked(context))" @onclick:stopPropagation>Delete</button>
     </LastColumnTemplate>

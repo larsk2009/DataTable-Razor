@@ -134,4 +134,16 @@
             }
         }
     </tbody>
+    @if (ShowTotals)
+    {
+        <tfoot>
+            @if (Items.Count == localItemsDictionary.Count)
+            {
+                <tr>Total: @Items.Count</tr>
+            } else
+            {
+                <tr>Total: @localItemsDictionary.Count of @Items.Count</tr>
+            }
+        </tfoot>
+    }
 </table>
