@@ -24,9 +24,9 @@ steps:
 - task: gitversion/execute@0
   displayName: Execute GitVersion
   inputs:
-    #useConfigFile: true
+    useConfigFile: true
     updateAssemblyInfo: true
-    #configFilePath: '$(Build.SourcesDirectory)/DataTable/GitVersionConfig.yaml'
+    configFilePath: '$(Build.SourcesDirectory)/DataTable/GitVersionConfig.yaml'
 
 - task: PowerShell@2
   displayName: 'Make version number unique'
