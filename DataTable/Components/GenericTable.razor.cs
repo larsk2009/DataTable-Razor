@@ -100,6 +100,12 @@ namespace DataTable.Components
             base.StateHasChanged();
         }
 
+        public void SetSearchText(string text)
+        {
+            SearchTable(text);
+            StateHasChanged();
+        }
+
         private void InitializeTable()
         {
             ItemNameClasses = ColumnClassDefault;

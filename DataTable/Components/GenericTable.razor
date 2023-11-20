@@ -30,7 +30,7 @@
         <div class="input-group-prepend">
             <span class="input-group-text oi oi-magnifying-glass" style="top: 0;"></span>
         </div>
-        <input @onchange="@(e => SearchTable(e.Value.ToString()))" oninput="(this.dispatchEvent(new CustomEvent('change', {bubbles: true})))" type="text" class="form-control" placeholder="search" />
+        <input @onchange="@(e => SearchTable(e.Value.ToString()))" oninput="(this.dispatchEvent(new CustomEvent('change', {bubbles: true})))" type="text" class="form-control" placeholder="search" value="@_searchText" />
     </div>
 
 </div>
