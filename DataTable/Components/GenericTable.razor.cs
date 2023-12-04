@@ -106,6 +106,12 @@ namespace DataTable.Components
             StateHasChanged();
         }
 
+        public void setSortColumn(string column)
+        {
+            SortList(column);
+            StateHasChanged();
+        }
+
         private void InitializeTable()
         {
             ItemNameClasses = ColumnClassDefault;
