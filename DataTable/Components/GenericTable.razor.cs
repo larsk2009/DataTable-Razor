@@ -115,7 +115,11 @@ namespace DataTable.Components
             int i = 0;
             //localItems = Items.ToList();
             localItemsDictionary = Items.ToDictionary(key => i++, value => value);
-            LastSortColumn = Columns.Keys.ToList()[0];
+
+            if(string.IsNullOrEmpty(LastSortColumn))
+            {
+                LastSortColumn = Columns.Keys.ToList()[0];
+            }
 
             SearchTable(_searchText);
         }
